@@ -64,3 +64,4 @@ def authenticate_user(username, password):
     if user and check_password_hash(user['password'], password):
         return True  # Authentication successful
     return False  # Authentication failed
+
