@@ -10,6 +10,7 @@ class Queue:
     # return: None
     def add(self, user: User) -> None:
         '''adds user to queue'''
+        self.queue.append(user)
 
     # requires: len(queue) > 0
     # modifies: queue
