@@ -5,6 +5,9 @@ deleting, and authenticating users using a MongoDB database.
 
 from werkzeug.security import generate_password_hash, check_password_hash
 from pymongo import MongoClient
+from fastapi import FastAPI
+
+app = FastAPI()
 
 # Establish connection to MongoDB
 client = MongoClient('mongodb://localhost:27017/')
@@ -12,6 +15,18 @@ client = MongoClient('mongodb://localhost:27017/')
 # Specify the database and collection
 db = client.Accounts
 credentials = db.Credentials
+
+
+@app.post("/process-button-click/")
+def process_button_click():
+    """does a thing
+
+    Returns:
+        _type_: _description_
+    """
+    # Your backend logic here
+    return {"message": "Button was clicked and processed by FastAPI backend!"}
+
 
 def add_user(username, password, email):
     """
