@@ -1,9 +1,27 @@
+from pymongo import MongoClient
 '''This module contains the driver class'''
 
 class Driver:
     '''This a class for drivers'''
+    def check_rep(self):
+        if not isinstance(self.name, str) and not isinstance(self.phone_number, str) \
+           and not isinstance(self.location, str) and not isinstance(self.max_riders, str)\
+           and not isinstance(self.name, str) and not isinstance(self.is_driving, bool):
+            raise AssertionError("driver has incorrect values")
 
-    def __init__(self, name: str, phone_number: str, location: tuple, max_riders: int,):
+    def __init__(self, name: str=None, phone_number: str=None, location: tuple=None, max_riders: int=None, hash_val: str=None):
+        if hash_val != None:
+            client = MongoClient('mongodb://localhost:27017/')
+            db = client['users']
+            collection = db['drivers']
+            driver = collection.find_one({"username":hash_val})
+            self.name = str(driver["name"])
+            self.phone_number = str(driver["phone"])
+            self.location = str(driver["location"])
+            self.max_people = int(driver["max_people"])
+            self.is_driving = False
+            return
+
         self.name = name
         self.phone_number = phone_number
         self.location = location

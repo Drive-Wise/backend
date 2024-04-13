@@ -3,7 +3,6 @@ import string
 from models.driver import Driver
 
 class Event:
-
     def __init__(self, event_name: string, event_date: string, location: string):
         self.event_name = event_name
         self.event_date = event_date
@@ -11,8 +10,9 @@ class Event:
         self.drivers = set()
         self.queue = queue()
         
-    def add_driver(self, driver: 'Driver'): 
-        self.drivers.add(driver)
+    def add_driver(self, driver: 'string'):
+        new_driver = Driver(hash_val=driver) 
+        self.drivers.add(new_driver)
 
     def give_rides(self):
         for driver in self.drivers:
