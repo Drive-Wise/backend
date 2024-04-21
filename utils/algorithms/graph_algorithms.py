@@ -11,7 +11,7 @@ def shortest_path(address1: str, address2: str, graph):
     nearest_node_1 = ox.distance.nearest_nodes(graph, X=location_1[1], Y=location_1[0]) # Note: OSMnx uses (X=longitude, Y=latitude) format
     nearest_node_2 = ox.distance.nearest_nodes(graph, X=location_2[1], Y=location_2[0])
 
-    return nx.shortest_path(graph, source=nearest_node_1, target=nearest_node_2, weight='time')
+    return nx.shortest_path(graph, source=nearest_node_1, target=nearest_node_2, weight='distance')
 
 def path_length(shortest_path: list, graph):
     route_gdf = ox.routing.route_to_gdf(graph, shortest_path)
@@ -69,33 +69,62 @@ def plot_route(route: list, graph):
         routes.append(curr_path)
         i+=1
 
-    fig, ax = ox.plot_graph_routes(graph, routes, route_colors=['red','blue','green','yellow','pink'], route_linewidth=6)
+    fig, ax = ox.plot_graph_routes(graph, routes, route_colors=['red','orange','yellow','green','blue','purple'], route_linewidth=6)
     
+def nearest_road_neighbor(start, stops, graph):
+    route = [start]
+    current = start
+    unvisited = stops.copy()
+
+    # Function to fetch the road distance
+    def road_distance(stop1, stop2):
+        path = shortest_path(stop1, stop2, graph)
+        return path_length(path, graph)
+
+    while unvisited:
+        next_stop = min(unvisited, key=lambda stop: road_distance(current, stop))
+        unvisited.remove(next_stop)
+        route.append(next_stop)
+        current = next_stop
+
+    
+    return route
 
 
 
 
 place_name = "Troy, New York, USA"
-latitude, longitude = 42.727009, -73.680784
-event_area = ox.graph_from_point((latitude, longitude), dist=5000, dist_type='bbox', network_type='drive')
+latitude, longitude = 42.728983, -73.679082
+event_area = ox.graph_from_point((latitude, longitude), dist=2000, dist_type='bbox', network_type='drive')
 
 
 home = "284 Pawling Ave, Troy, New York"
+event = "1761 15th St, Troy, New York"
 addy_1 = "2215 Burdett Ave, Troy, New York"
 addy_2 = "1969 Burdett Ave, Troy New York"
 addy_3 = "312 Congress St, Troy, New York"
 addy_4 = "266 4th St, Troy, New York"
+addy_5 = "310 a oakwood Ave, Troy, New York"
+addy_6 = "9 126th St, Troy, new York"
+addy_7 = "2701 Lavin Ct, Troy, New York"
+addy_8 = "2 Maxwell Dr, Troy, New York"
+addy_9 = "765 pawling Ave, Troy, New York"
+addy_10 = "266 4th St, Troy, New York"
 
-stop_list = [addy_1, addy_2, addy_3, addy_4]
 
-#print(route_length(stop_list, event_area))
+stop_list = [addy_3, addy_1, addy_2, home, addy_10]
+
+
 current_time = datetime.datetime.now()
-print(get_efficient_route(stop_list, home, event_area))
-print(datetime.datetime.now()-current_time)
-
-current_time = datetime.datetime.now()
-opt_route = two_opt(stop_list, home, event_area)
+opt_route = two_opt(nearest_road_neighbor(event, stop_list, event_area)[1:], event, event_area)
 print(opt_route)
 print(datetime.datetime.now()-current_time)
+plot_route(opt_route, event_area)
 
+
+
+current_time = datetime.datetime.now()
+opt_route = get_efficient_route(stop_list, event, event_area)
+print(opt_route)
+print(datetime.datetime.now()-current_time)
 plot_route(opt_route, event_area)
