@@ -1,9 +1,16 @@
 '''This module contains the user class'''
-import datetime
+from dataclasses import dataclass
+from pymongo import MongoClient
 from dotenv import load_dotenv
+import datetime
 import os
+
+@dataclass
 class User:
-    '''This a class for users'''
+    """
+    Dataclass that either loads users from mongodb or 
+    creates temporary User
+    """
 
     def __init__(self, name: str, phone_number: str,
                  location: tuple, num_people: int,
@@ -28,6 +35,7 @@ class User:
                        {'$set': {'time_added': self.time_added}})
             if new_time.matched_count <= 0:
                 print("No user found")
+            return
         collection = db['temporary_users']
         self.name = name
         self.phone_number = phone_number
@@ -46,21 +54,91 @@ class User:
 
 
     def get_name(self):
-        '''This returns the name of the user'''
+        """
+        returns the name of the user
+
+        Args:
+            None
+
+        Returns:
+            name: name of user
+
+        Raises:
+            None
+        
+        Modifies: 
+            None
+        """
         return self.name
 
     def get_phone_number(self):
-        '''This returns the phone number of the user'''
+        """
+        returns the phone number of the user
+
+        Args:
+            None
+
+        Returns:
+            user: phone number of user
+
+        Raises:
+            None
+        
+        Modifies: 
+            None
+        """
         return self.phone_number
 
     def get_location(self):
-        '''This returns the location of the user via longitude and latitude'''
+        """
+        returns the location of the user
+
+        Args:
+            None
+
+        Returns:
+            location: location of user
+
+        Raises:
+            None
+        
+        Modifies: 
+            None
+        """
         return self.location
 
     def get_num_people(self):
-        '''This returns the number of people in the group'''
+        """
+        returns the number of people user has
+
+        Args:
+            None
+
+        Returns:
+            num_people: number of people user has
+
+        Raises:
+            None
+        
+        Modifies: 
+            None
+        """
         return self.num_people
 
     def get_time(self):
-        '''This returns the time the user was added to the queue'''
+        """
+        returns the time of user was added to queue
+
+        Args:
+            None
+
+        Returns:
+            time_added: time added to queue
+
+        Raises:
+            None
+        
+        Modifies: 
+            None
+        """
         return self.time_added

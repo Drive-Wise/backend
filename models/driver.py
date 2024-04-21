@@ -1,17 +1,42 @@
 from pymongo import MongoClient
-'''This module contains the driver class'''
+from dotenv import load_dotenv
+import os
 
 class Driver:
-    '''This a class for drivers'''
+    """
+    Class that loads drivers from mongodb and updates their location
+    as well as check if they are driving
+    """
     def check_rep(self):
-        if not isinstance(self.name, str) and not isinstance(self.phone_number, str) \
-           and not isinstance(self.location, str) and not isinstance(self.max_riders, str)\
-           and not isinstance(self.name, str) and not isinstance(self.is_driving, bool):
+        """
+        checks if instance types are accurate for class
+
+        Args:
+            None
+
+        Returns:
+            None
+
+        Raises:
+            Throws AssertionError if self.name != str || self.phone_number
+            self.location != str || self.max_riders != str ||
+            self.name != str || self.is_driving != bool
+        
+        Modifies: 
+            None
+        """
+        if not isinstance(self.name, str) or not isinstance(self.phone_number, str) \
+           or not isinstance(self.location, str) or not isinstance(self.max_riders, str)\
+           or not isinstance(self.name, str) or not isinstance(self.is_driving, bool):
             raise AssertionError("driver has incorrect values")
 
-    def __init__(self, name: str=None, phone_number: str=None, location: tuple=None, max_riders: int=None, hash_val: str=None):
+    def __init__(self, name: str=None, phone_number: str=None, location: tuple=None, max_riders: int=None, hash_val: int=None):
         if hash_val != None:
-            client = MongoClient('mongodb://localhost:27017/')
+            load_dotenv()
+            end_point = os.getenv('MONGO_DB_ENDPOINT', 'ENDPOINT_NOT_FOUND')
+            if end_point == 'ENDPOINT_NOT_FOUND':
+                print("ENDPOINT NOT FOUND")
+            client = MongoClient(end_point)
             db = client['users']
             collection = db['drivers']
             driver = collection.find_one({"username":hash_val})
@@ -29,35 +54,135 @@ class Driver:
         self.is_driving = False
 
     def get_name(self):
-        '''This returns the name of the driver'''
+        """
+        returns the name of the driver
+
+        Args:
+            None
+
+        Returns:
+            name: name of driver
+
+        Raises:
+            None
+        
+        Modifies: 
+            None
+        """
         return self.name
 
     def get_phone_number(self):
-        '''This returns the phone number of the driver'''
+        """
+        returns the phone number of the driver
+
+        Args:
+            None
+
+        Returns:
+            phone_number: phone number of driver
+
+        Raises:
+            None
+        
+        Modifies: 
+            None
+        """
         return self.phone_number
 
     def set_location(self, location):
-        '''sets location of driver'''
+        """
+        updates location of the driver
+
+        Args:
+            None
+
+        Returns:
+            None
+
+        Raises:
+            None
+        
+        Modifies: 
+            self.location: updates with current location
+        """
         self.location = location
 
     def set_driving(self, val:bool):
+        """
+        sets driver to if they are driving or not
+
+        Args:
+            val: Boolean: True = (driving) False = (Not driving)
+
+        Returns:
+            None
+
+        Raises:
+            None
+        
+        Modifies: 
+            None
+        """
         self.is_driving = val
 
     def get_location(self):
-        '''This returns the location of the driver via longitude and latitude'''
+        """
+        returns the location of the driver
+
+        Args:
+            None
+
+        Returns:
+            location - location of driver.
+
+        Raises:
+            None
+        
+        Modifies: 
+            None
+        """
         return self.location
 
     def get_max_riders(self):
-        '''This returns the maximum number of people in the car'''
+        """
+        returns the max riders a driver can take
+
+        Args:
+            None
+
+        Returns:
+            self.max_riders: amount of people driver can fit
+
+        Raises:
+            None
+        
+        Modifies: 
+            None
+        """
         return self.max_riders
     
-    def is_driving(self):
+    def get_is_driving(self):
+        """
+        returns if driver is driving
+
+        Args:
+            None
+
+        Returns:
+            self.is_driving: if driver is driving
+
+        Raises:
+            None
+        
+        Modifies: 
+            None
+        """
         return self.is_driving
     
 
     def __eq__(self, other):
         if isinstance(self, other):
-            return (self.name == other.get_name()) and (self.phone_number == other.get_phone_number)
+            return (self.name == other.get_name()) and (self.phone_number == other.get_phone_number())
         NotImplemented
     
     def __hash__(self):
