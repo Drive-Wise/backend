@@ -6,18 +6,64 @@ import random
 import matplotlib.pyplot as plt
 
 def shortest_path(address1: str, address2: str, graph):
+    """
+    returns the shortest path between two addresses
+
+    Args:
+        address1 - starting address
+        address2 - ending address
+
+    Returns:
+        shortest path between address1 and address2
+
+    Raises:
+        None
+    
+    Modifies: 
+        None
+    """
     location_1 = ox.geocoder.geocode(address1)
     location_2 = ox.geocoder.geocode(address2)
-    nearest_node_1 = ox.distance.nearest_nodes(graph, X=location_1[1], Y=location_1[0]) # Note: OSMnx uses (X=longitude, Y=latitude) format
+    nearest_node_1 = ox.distance.nearest_nodes(graph, X=location_1[1], Y=location_1[0]) 
     nearest_node_2 = ox.distance.nearest_nodes(graph, X=location_2[1], Y=location_2[0])
 
     return nx.shortest_path(graph, source=nearest_node_1, target=nearest_node_2, weight='distance')
 
 def path_length(shortest_path: list, graph):
+    """
+    returns the length of a path
+
+    Args:
+        shortest_path - a path
+
+    Returns:
+        length of path passed in
+
+    Raises:
+        None
+    
+    Modifies: 
+        None
+    """
     route_gdf = ox.routing.route_to_gdf(graph, shortest_path)
     return route_gdf['length'].sum()
 
 def route_length(route: list, graph):
+    """
+    returns the length of the route given multiple paths
+
+    Args:
+        route - list of paths
+
+    Returns:
+        total length of route
+
+    Raises:
+        None
+    
+    Modifies: 
+        None
+    """
     total_length = 0
     i = 0
     while i < len(route)-1:
@@ -28,6 +74,23 @@ def route_length(route: list, graph):
 
 
 def get_efficient_route(stops: list, event_location: str, graph):
+    """
+    Traveling Sales Man O(N!) function to calculate efficient route
+
+    Args:
+        stops - locations to get to
+        event_location - location of the event
+        graph - osmnx graph
+
+    Returns:
+        A list with most efficent route 
+
+    Raises:
+        None
+    
+    Modifies: 
+        None
+    """
     route = []
     time = -1
     for tuple_permutation in itertools.permutations(stops):
@@ -45,7 +108,24 @@ def get_efficient_route(stops: list, event_location: str, graph):
 
 
 def two_opt(route: list, event_location: str, graph):
-    """ Perform 2-opt swaps on the route to find a shorter path. """
+    """
+    Lin Keurighan Heuristic O(n^2logn) function to calculate
+    approximate efficient route
+
+    Args:
+        stops - locations to get to
+        event_location - location of the event
+        graph - osmnx graph
+
+    Returns:
+       A list with approximate efficent route 
+
+    Raises:
+        None
+    
+    Modifies: 
+        None
+    """
     best_route = route
     improved = True
     while improved:
@@ -55,23 +135,58 @@ def two_opt(route: list, event_location: str, graph):
                 if j - i == 1: continue  # Skip adjacent edges
                 new_route = route[:]
                 new_route[i:j] = route[j - 1:i - 1:-1]  # Reverse the segment between i and j
-                if route_length([event_location] + new_route + [event_location], graph) < route_length([event_location] + best_route + [event_location], graph):
+                if route_length([event_location] + new_route + [event_location], graph) < \
+                    route_length([event_location] + best_route + [event_location], graph):
                     best_route = new_route
                     improved = True
         route = best_route
     return [event_location] + best_route + [event_location]
 
 def plot_route(route: list, graph):
+    """
+    Plots the route using osmnx plot function
+
+    Args:
+        route - list of route to graph
+        graph - osmnx graph
+
+    Returns:
+        None
+
+    Raises:
+        None
+    
+    Modifies: 
+        None
+    """
     i = 0
     routes=[]
     while i < len(route)-1:
         curr_path = shortest_path(route[i], route[i+1], graph)
         routes.append(curr_path)
         i+=1
-
-    fig, ax = ox.plot_graph_routes(graph, routes, route_colors=['red','orange','yellow','green','blue','purple'], route_linewidth=6)
+    route_colors_list = ['red','orange','yellow','green','blue','purple']
+    fig, ax = ox.plot_graph_routes(graph, routes, route_colors=route_colors_list, route_linewidth=6)
     
 def nearest_road_neighbor(start, stops, graph):
+    """
+    Nearest Road Neigbor algorithm that gives an optimal route
+    given via choosing the nearest neighbor
+
+    Args:
+        start - start location
+        stops - locations to get to
+        graph - osmnx graph
+
+    Returns:
+        a list with route calculated via nearest neighbors
+
+    Raises:
+        None
+    
+    Modifies: 
+        None
+    """
     route = [start]
     current = start
     unvisited = stops.copy()
@@ -93,6 +208,8 @@ def nearest_road_neighbor(start, stops, graph):
 
 
 
+
+# will put everything below in test file
 place_name = "Troy, New York, USA"
 latitude, longitude = 42.728983, -73.679082
 event_area = ox.graph_from_point((latitude, longitude), dist=2000, dist_type='bbox', network_type='drive')
