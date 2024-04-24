@@ -1,11 +1,12 @@
-import osmnx as ox
-import networkx as nx
+'''This module Stoes algorithms for finding fastest routes'''
 import itertools
 import datetime
-import random
-import matplotlib.pyplot as plt
+import osmnx as ox
+import networkx as nx
+
 
 def shortest_path(address1: str, address2: str, graph):
+    '''This returns the shortest path between two loaactions within the graph given by address'''
     location_1 = ox.geocoder.geocode(address1)
     location_2 = ox.geocoder.geocode(address2)
     nearest_node_1 = ox.distance.nearest_nodes(graph, X=location_1[1], Y=location_1[0]) # Note: OSMnx uses (X=longitude, Y=latitude) format
@@ -14,10 +15,12 @@ def shortest_path(address1: str, address2: str, graph):
     return nx.shortest_path(graph, source=nearest_node_1, target=nearest_node_2, weight='distance')
 
 def path_length(shortest_path: list, graph):
+    '''This returns the length of a path'''
     route_gdf = ox.routing.route_to_gdf(graph, shortest_path)
     return route_gdf['length'].sum()
 
 def route_length(route: list, graph):
+    '''This returns the length of a route between mulitple locations'''
     total_length = 0
     i = 0
     while i < len(route)-1:
@@ -28,6 +31,7 @@ def route_length(route: list, graph):
 
 
 def get_efficient_route(stops: list, event_location: str, graph):
+    '''This will return the most efficient route from the event to severl pickup locations and back'''
     route = []
     time = -1
     for tuple_permutation in itertools.permutations(stops):
@@ -45,7 +49,7 @@ def get_efficient_route(stops: list, event_location: str, graph):
 
 
 def two_opt(route: list, event_location: str, graph):
-    """ Perform 2-opt swaps on the route to find a shorter path. """
+    '''This will return an efficient route from the event to severl pickup locations and back'''
     best_route = route
     improved = True
     while improved:
@@ -62,6 +66,7 @@ def two_opt(route: list, event_location: str, graph):
     return [event_location] + best_route + [event_location]
 
 def plot_route(route: list, graph):
+    '''This plots a route on a graph for visualization'''
     i = 0
     routes=[]
     while i < len(route)-1:
@@ -69,9 +74,11 @@ def plot_route(route: list, graph):
         routes.append(curr_path)
         i+=1
 
-    fig, ax = ox.plot_graph_routes(graph, routes, route_colors=['red','orange','yellow','green','blue','purple'], route_linewidth=6)
-    
+    fig, ax = ox.plot_graph_routes(graph, routes, 
+            route_colors=['red','orange','yellow','green','blue','purple'], route_linewidth=6)
+
 def nearest_road_neighbor(start, stops, graph):
+    '''This performs the nearest neighbhor function to optimize route finding'''
     route = [start]
     current = start
     unvisited = stops.copy()
@@ -86,8 +93,6 @@ def nearest_road_neighbor(start, stops, graph):
         unvisited.remove(next_stop)
         route.append(next_stop)
         current = next_stop
-
-    
     return route
 
 
