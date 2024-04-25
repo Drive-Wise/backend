@@ -5,30 +5,8 @@ import datetime
 import random
 import matplotlib.pyplot as plt
 
-def shortest_path(address1: str, address2: str, graph):
-    """
-    returns the shortest path between two addresses
 
-    Args:
-        address1 - starting address
-        address2 - ending address
-
-    Returns:
-        shortest path between address1 and address2
-
-    Raises:
-        None
-    
-    Modifies: 
-        None
-    """
-    location_1 = ox.geocoder.geocode(address1)
-    location_2 = ox.geocoder.geocode(address2)
-    nearest_node_1 = ox.distance.nearest_nodes(graph, X=location_1[1], Y=location_1[0]) 
-    nearest_node_2 = ox.distance.nearest_nodes(graph, X=location_2[1], Y=location_2[0])
-
-    return nx.shortest_path(graph, source=nearest_node_1, target=nearest_node_2, weight='distance')
-
+###################### ---- Route Functions ---- ######################
 def path_length(shortest_path: list, graph):
     """
     returns the length of a path
@@ -72,6 +50,31 @@ def route_length(route: list, graph):
         i+=1
     return total_length
 
+###################### ---- Path Calculation Functions/Path Algorithms ---- ######################
+
+def shortest_path(address1: str, address2: str, graph):
+    """
+    returns the shortest path between two addresses
+
+    Args:
+        address1 - starting address
+        address2 - ending address
+
+    Returns:
+        shortest path between address1 and address2
+
+    Raises:
+        None
+    
+    Modifies: 
+        None
+    """
+    location_1 = ox.geocoder.geocode(address1)
+    location_2 = ox.geocoder.geocode(address2)
+    nearest_node_1 = ox.distance.nearest_nodes(graph, X=location_1[1], Y=location_1[0]) 
+    nearest_node_2 = ox.distance.nearest_nodes(graph, X=location_2[1], Y=location_2[0])
+
+    return nx.shortest_path(graph, source=nearest_node_1, target=nearest_node_2, weight='distance')
 
 def get_efficient_route(stops: list, event_location: str, graph):
     """
@@ -103,9 +106,6 @@ def get_efficient_route(stops: list, event_location: str, graph):
             route = permutation
 
     return route
-
-
-
 
 def two_opt(route: list, event_location: str, graph):
     """
@@ -206,42 +206,11 @@ def nearest_road_neighbor(start, stops, graph):
     return route
 
 
+from scipy.stats import spearmanr, kendalltau
 
+lk = ['1761 15th St, Troy, New York', '2215 Burdett Ave, Troy, New York', '1969 Burdett Ave, Troy New York', '312 Congress St, Troy, New York', '266 4th St, Troy, New York', '284 Pawling Ave, Troy, New York', '1761 15th St, Troy, New York']
 
+tsp = ['1761 15th St, Troy, New York', '2215 Burdett Ave, Troy, New York', '1969 Burdett Ave, Troy New York', '312 Congress St, Troy, New York', '284 Pawling Ave, Troy, New York', '266 4th St, Troy, New York', '1761 15th St, Troy, New York']
 
-# will put everything below in test file
-place_name = "Troy, New York, USA"
-latitude, longitude = 42.728983, -73.679082
-event_area = ox.graph_from_point((latitude, longitude), dist=2000, dist_type='bbox', network_type='drive')
-
-
-home = "284 Pawling Ave, Troy, New York"
-event = "1761 15th St, Troy, New York"
-addy_1 = "2215 Burdett Ave, Troy, New York"
-addy_2 = "1969 Burdett Ave, Troy New York"
-addy_3 = "312 Congress St, Troy, New York"
-addy_4 = "266 4th St, Troy, New York"
-addy_5 = "310 a oakwood Ave, Troy, New York"
-addy_6 = "9 126th St, Troy, new York"
-addy_7 = "2701 Lavin Ct, Troy, New York"
-addy_8 = "2 Maxwell Dr, Troy, New York"
-addy_9 = "765 pawling Ave, Troy, New York"
-addy_10 = "266 4th St, Troy, New York"
-
-
-stop_list = [addy_3, addy_1, addy_2, home, addy_10]
-
-
-current_time = datetime.datetime.now()
-opt_route = two_opt(nearest_road_neighbor(event, stop_list, event_area)[1:], event, event_area)
-print(opt_route)
-print(datetime.datetime.now()-current_time)
-plot_route(opt_route, event_area)
-
-
-
-current_time = datetime.datetime.now()
-opt_route = get_efficient_route(stop_list, event, event_area)
-print(opt_route)
-print(datetime.datetime.now()-current_time)
-plot_route(opt_route, event_area)
+spearman_correlation, _ = spearmanr(lk, tsp)
+print("Spearman's rank correlation:", spearman_correlation)
