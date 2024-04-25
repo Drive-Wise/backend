@@ -1,6 +1,6 @@
-import queue
+from data_structures.queue.queue import Queue
 import string
-from models.driver import Driver
+from models.driver.driver import Driver
 
 class Event:
     def check_rep(self):
@@ -32,7 +32,7 @@ class Event:
         self.event_date = event_date
         self.location = location
         self.drivers = set()
-        self.queue = queue()
+        self.queue = Queue()
         self.check_rep()
         
     def add_driver(self, driver: 'int'):
@@ -95,7 +95,7 @@ class Event:
         Modifies: 
             None
         """
-        return string(self.event_date)
+        return self.event_date
     
     def get_event_name(self):
         """
@@ -113,7 +113,7 @@ class Event:
         Modifies: 
             None
         """
-        return string(self.event_name)
+        return self.event_name
 
     def get_location(self):
         """
@@ -131,6 +131,6 @@ class Event:
         Modifies: 
             None
         """
-        return string(self.location)
+        return self.location
     
 

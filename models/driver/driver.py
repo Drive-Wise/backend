@@ -181,7 +181,7 @@ class Driver:
     
 
     def __eq__(self, other):
-        if isinstance(self, other):
+        if isinstance(other, Driver):
             return (self.name == other.get_name()) and (self.phone_number == other.get_phone_number())
         NotImplemented
     

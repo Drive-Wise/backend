@@ -1,4 +1,4 @@
-from models.user import User
+from models.user.user import User
 
 class Queue:
     '''Queue class for drivers to use and handle users'''
@@ -26,7 +26,7 @@ class Queue:
         Modifies: 
             None
         """
-        
+
         self.queue.append(user)
         self.queue.sort(key=lambda user: user.get_time())
 
