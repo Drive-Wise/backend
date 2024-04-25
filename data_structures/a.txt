@@ -1,0 +1,3 @@
+doctest - builds unit tests into docstring
+unittest - JUnit but python
+pyTest -
